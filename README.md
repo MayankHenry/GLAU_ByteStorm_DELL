@@ -1,75 +1,79 @@
-﻿# The Network Bouncer
+﻿[![Project Status](https://img.shields.io/badge/status-ready-success?style=for-the-badge)](https://github.com/MayankHenry/GLAU_ByteStorm_DELL)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge)](https://www.python.org/)
+[![React](https://img.shields.io/badge/react-19.2.6-blue?style=for-the-badge)](https://react.dev/)
 
-## Overview
+# 🛡️ The Network Bouncer
 
-**The Network Bouncer** is an enterprise-style network security analytics engine that ingests UNSW-NB15-style network flow data, detects suspicious port scanning and exfiltration behavior, generates SOC-ready reports, and outputs active defense mitigation commands.
-
-This repository includes:
-- Python detection engine (`network_bouncer.py` and supporting modules)
-- Signature and anomaly detection logic for suspicious IPs
-- Report generation and JSON feed export
-- Local incident logging with SQLite
-- Windows firewall mitigation command output
-- A lightweight React/Vite dashboard in `network-bouncer-ui`
-
-> Note: The large raw dataset CSV files are excluded from the repository because they exceed GitHub's 100 MB limit. Use your own network traffic CSV files that conform to the expected column layout.
+**The Network Bouncer** is a polished threat detection platform for network traffic analytics. It analyzes UNSW-NB15-style flow data, finds suspicious port scanning and exfiltration behavior, and produces SOC-ready dashboards, reports, and mitigation commands.
 
 ---
 
-## Features
+## ✨ Why this project?
 
-- Batch ingestion of single CSV files or entire directories of CSVs
-- Windowed suspicious activity detection based on unique destination ports and IPs
-- Critical infrastructure port detection (SSH, FTP, RDP, MySQL, MSSQL)
-- Severity labeling: `Low`, `Medium`, `High`, and `CRITICAL`
-- Exfiltration risk detection based on bytes transferred
-- Isolation Forest anomaly detection over aggregated IP metrics
-- HTML dashboard generation (`dashboard.html`)
-- CSV report export (`suspicious_activity_report.csv`)
-- JSON threat feed export (`threat_feed.json`)
-- Local incident logging to SQLite (`threat_logs.db`)
-- Active defense mitigation command output for Windows Firewall
-- React/Vite UI for live threat visualization
+- Turn raw network flow logs into actionable incident intelligence
+- Detect port scans, critical targeting, and data exfiltration risks
+- Export alerts to CSV, JSON, HTML, SQLite, and Windows firewall commands
+- Visualize attack signals with both generated dashboards and a React UI
 
 ---
 
-## Repository Structure
+## 🚀 What it does
 
-- `network_bouncer.py` - Main Python entry point and orchestration logic
-- `parser.py` - CSV ingestion and preprocessing
-- `detector.py` - Suspicious activity detection and severity scoring
-- `ml_model.py` - Isolation Forest anomaly detection on aggregated metrics
-- `database.py` - SQLite incident logging
-- `reporter.py` - CSV, HTML, JSON export and optional webhook alerting
-- `visualizer.py` - Chart generation for suspicious activity
-- `mitigation.py` - Generates Windows `netsh` firewall block commands
-- `dashboard.html` - Sample generated dashboard output
-- `network-bouncer-ui/` - React/Vite frontend for visualizing threat feed
-- `dataset/` - CSV dataset folder (not tracked in Git due size limits)
+- Reads single CSV files or directories of CSV files
+- Detects suspicious IPs by scanning abnormal port and IP activity
+- Flags critical infrastructure attacks on SSH, FTP, RDP, MySQL, MSSQL
+- Evaluates exfiltration risk from large outbound byte volumes
+- Applies Isolation Forest anomaly detection to augmented flow metrics
+- Logs incidents locally to SQLite for audit and tracking
+- Generates active defense commands for Windows Firewall
 
 ---
 
-## Python Requirements
+## 📁 Project structure
 
-Install the following packages before running the engine:
+| File / Folder | Purpose |
+|---|---|
+| `network_bouncer.py` | Main orchestration script |
+| `parser.py` | CSV ingestion and normalization |
+| `detector.py` | Suspicious activity detection logic |
+| `ml_model.py` | Isolation Forest anomaly detection |
+| `database.py` | Incident logging to SQLite |
+| `reporter.py` | CSV/HTML/JSON export and webhook support |
+| `visualizer.py` | Generates charts for suspicious activity |
+| `mitigation.py` | Produces Windows firewall block commands |
+| `dashboard.html` | Sample generated HTML dashboard |
+| `network-bouncer-ui/` | React/Vite frontend dashboard |
+| `dataset/` | Local dataset folder (excluded from Git) |
 
-- Python 3.11 or later
-- pandas
-- scikit-learn
-- matplotlib
-- requests
+---
 
-### Install dependencies
+## ✅ Features
+
+- **Multi-file CSV ingestion** for batches or single logs
+- **360° threat scoring** using signatures and ML anomaly detection
+- **Critical port detection** for high-risk infrastructure access
+- **JSON threat feed export** for frontend decoupling
+- **SQLite incident persistence** for auditing and review
+- **Interactive React dashboard** for SOC analysts
+- **Windows Firewall mitigation** command generation
+
+---
+
+## 🧩 Requirements
+
+Install the Python dependencies before running the engine:
 
 ```powershell
 python -m pip install pandas scikit-learn matplotlib requests
 ```
 
+> Recommended: Python 3.11 or later
+
 ---
 
-## Running the Engine
+## ▶️ Run the engine
 
-From the project root, run:
+From the repository root:
 
 ```powershell
 python network_bouncer.py <path/to/csv-or-folder> [--max-ports 50] [--max-ips 20]
@@ -83,17 +87,17 @@ python network_bouncer.py dataset
 
 ### CLI options
 
-- `target` - path to a single CSV or a folder containing CSV files
-- `--max-ports` - unique destination port threshold for suspicious detection (default: `50`)
-- `--max-ips` - unique destination IP threshold for suspicious detection (default: `20`)
+- `target` — path to a CSV file or folder with CSV files
+- `--max-ports` — unique destination port threshold (default: `50`)
+- `--max-ips` — unique destination IP threshold (default: `20`)
 
 ---
 
-## Expected CSV Input Format
+## 📦 Expected CSV layout
 
-The parser expects UNSW-NB15-style network flow CSV data with these source positions:
+The loader reads UNSW-NB15-like flows and expects the following columns:
 
-| Column Index | Field |
+| Column index | Field |
 |---|---|
 | `0` | `srcip` |
 | `1` | `sport` |
@@ -103,27 +107,27 @@ The parser expects UNSW-NB15-style network flow CSV data with these source posit
 | `8` | `dbytes` |
 | `26` | `timestamp` |
 
-If the file contains additional columns, the loader reads only the required fields and drops rows missing the critical IP/port values.
+Only the necessary fields are ingested; extra columns are ignored.
 
 ---
 
-## Output Artifacts
+## 📤 Output files
 
-The engine produces several outputs:
+The engine produces:
 
-- `suspicious_activity_report.csv` - flagged suspicious IPs and risk metadata
-- `dashboard.html` - standalone HTML threat dashboard
-- `threat_feed.json` - JSON feed for frontend consumption
-- `suspicious_activity_chart.png` - bar chart of top suspicious port scanners
-- `threat_logs.db` - SQLite database storing logged incidents
+- `suspicious_activity_report.csv`
+- `dashboard.html`
+- `threat_feed.json`
+- `suspicious_activity_chart.png`
+- `threat_logs.db`
 
 ---
 
-## React Frontend
+## 🖥️ React Dashboard
 
-The `network-bouncer-ui` app consumes `src/threat_feed.json` and renders the threat dashboard.
+The front-end app uses the JSON feed at `network-bouncer-ui/src/threat_feed.json`.
 
-### Run frontend locally
+Run the React UI locally:
 
 ```powershell
 cd network-bouncer-ui
@@ -131,61 +135,42 @@ npm install
 npm run dev
 ```
 
-### Build for production
+Build for production:
 
 ```powershell
 cd network-bouncer-ui
 npm run build
 ```
 
-> The current frontend is configured as a static React/Vite app and uses the JSON feed file for display.
+---
+
+## 🔧 Optional enhancements
+
+- Set `DISCORD_WEBHOOK_URL` in `reporter.py` for live alert delivery
+- Use generated `netsh advfirewall` commands to block `CRITICAL` attackers
+- Extend the React UI to fetch live JSON from the Python pipeline
+- Replace sample dataset files with real network flows for live testing
 
 ---
 
-## Optional Configuration
+## 💡 Notes
 
-### Discord webhook alerts
-
-The `reporter.py` module includes a `DISCORD_WEBHOOK_URL` placeholder. If you want real-time alerting, update that value with a valid Discord webhook URL.
-
-### Windows firewall mitigation
-
-The engine prints `netsh advfirewall` commands for any threat marked `CRITICAL`. Run those commands in an elevated Windows shell to block the attacking source IPs.
+- The `dataset/` folder is excluded from GitHub because the raw CSVs exceed GitHub's 100 MB limit.
+- Use smaller sample files or link to your own dataset source.
 
 ---
 
-## Architecture Summary
+## 🙌 Contribution
 
-1. `parser.py` reads and normalizes CSV traffic data.
-2. `detector.py` groups flows by source IP and time window, then flags suspicious scanning and exfiltration patterns.
-3. `ml_model.py` applies Isolation Forest to aggregated metrics for anomaly detection.
-4. `reporter.py` exports results to CSV, HTML, and JSON, and can send webhook notifications.
-5. `database.py` logs incidents into a local SQLite database.
-6. `visualizer.py` creates a chart image for SOC review.
-7. `mitigation.py` generates firewall blocking commands for active defense.
+This project is designed for rapid experimentation. Feel free to add:
 
----
-
-## Notes
-
-- The repository excludes the raw dataset files from Git because they are larger than GitHub's 100 MB limit.
-- Use your own dataset files stored locally, or replace the `dataset/` folder contents with smaller sample files.
-- If you want to connect the frontend to live Python output, update the React app to fetch `threat_feed.json` from the Python engine output path or serve it from an API.
-
----
-
-## Contribution
-
-Feel free to extend the system with:
-
-- stronger multi-stage threat scoring
+- richer threat scoring models
 - automated alert delivery channels
 - API-based frontend integration
-- cross-platform firewall mitigation
-- model retraining and adaptive thresholds
+- cross-platform mitigation support
 
 ---
 
-## License
+## 📜 License
 
-This repository does not currently include a license file. Add one if you want open-source contribution permissions.
+No license file is included yet. Add one to open the project to public contribution.
